@@ -16,6 +16,7 @@ $modelUrl = $_ENV['AZURE_DI_MODEL_URL']   ?? '';
 require_once 'azure_client.php';
 require_once __DIR__ . '/config.php';
 require_once 'utils.php';
+require_once 'zoho_client.php';
 
 header('Content-Type: application/json');
 

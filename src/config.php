@@ -15,12 +15,14 @@ $modelUrl = $_ENV['AZURE_DI_MODEL_URL']   ?? '';
 
 /**
  * Zoho CRM Configuration
- * Note: For production, consider loading these from the .env file as well.
  */
-// define('ZOHO_ACCESS_TOKEN', 'zoho-access-token'); // TODO: Move to .env
-// define('ZOHO_API_URL', 'https://www.zohoapis.com/crm/v2/Leads');
+    $zohoClientId     = $_ENV['ZOHO_CLIENT_ID'];
+    $zohoClientSecret = $_ENV['ZOHO_CLIENT_SECRET'];
+    $zohoRedirectUri  = $_ENV['ZOHO_REDIRECT_URI'];
+    $zohoRefreshToken = $_ENV['ZOHO_REFRESH_TOKEN'];
+    $zohoBaseUrl      = $_ENV['ZOHO_BASE_URL'];
 
-/**
- * Logging Configuration
- */
-define('LOG_FILE', __DIR__ . '/logs/debug.log');
+// /**
+//  * Logging Configuration
+//  */
+// define('LOG_FILE', __DIR__ . '/logs/debug.log');
