@@ -1,26 +1,26 @@
 <?php
 
-define('LOG_FILE_PATH', __DIR__ . '/logs/form.log'); // Use singular for file, and LOG_FILE_PATH for clarity
-
 /**
- * Write a debug message to the log file with timestamp.
+ * Write a debug message to WordPress debug log if WP_DEBUG is enabled.
  *
  * @param string $message
  * @param string $level Optional log level (e.g., INFO, DEBUG, ERROR)
  */
 function logDebug(string $message, string $level = 'INFO'): void {
-    $formattedMessage = sprintf("[%s] [%s] %s\n", date('Y-m-d H:i:s'), $level, $message);
-    file_put_contents(LOG_FILE_PATH, $formattedMessage, FILE_APPEND);
+    if (defined('WP_DEBUG') && WP_DEBUG === true) {
+        error_log("[$level] $message");  // goes to wp-content/debug.log
+    }
 }
 
-/**
- * Print formatted debug output to screen (for dev/testing use).
- *
- * @param string $label
- * @param mixed $data
- */
-function printDebug(string $label, $data): void {
-    echo "<pre><strong>$label:</strong>\n";
-    print_r($data);
-    echo "</pre>\n";
-}
+
+// /**
+//  * Print formatted debug output to screen (for dev/testing use).
+//  *
+//  * @param string $label
+//  * @param mixed $data
+//  */
+// function printDebug(string $label, $data): void {
+//     echo "<pre><strong>$label:</strong>\n";
+//     print_r($data);
+//     echo "</pre>\n";
+// }

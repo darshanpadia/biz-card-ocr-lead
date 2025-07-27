@@ -1,57 +1,45 @@
 <h2>Upload Business Card</h2>
-<form method="post" enctype="multipart/form-data">
+
+<form method="post" enctype="multipart/form-data" id="cardForm" action="form_handler.php">
     <label>Full Name:</label><br>
-    <input type="text" name="name" value="<?= isset($lead['fullName']) ? htmlspecialchars($lead['fullName']) : '' ?>" required>
+    <input type="text" name="name" id="nameField" required>
     <br><br>
 
     <label>Select an image of the business card:</label><br><br>
-    <input type="file" name="business_card" accept="image/*" required>
+    <input type="file" name="business_card" id="cardInput" accept="image/*" required>
     <br><br>
+
+    <div id="statusMsg"></div>
+
     <button type="submit" name="submit_card">Submit</button>
 </form>
 
+<script>
+document.getElementById('cardInput').addEventListener('change', function () {
+    const file = this.files[0];
+    if (!file) return;
 
-<?php
-$lead = []; // Ensure it's defined early
+    const formData = new FormData();
+    formData.append('business_card', file);
+    console.log("formData:", formData);
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['business_card']) && isset($_POST['submit_card'])) {
-    $tmpPath = $_FILES['business_card']['tmp_name'];
+    document.getElementById('statusMsg').innerText = 'Uploading and analyzing...';
 
-    // Step 1: Send to Azure
-    $operationUrl = sendToAzure($tmpPath, $apiKey, $modelUrl);
-
-    // Step 2: Get Parsed Fields
-    $fields = getAzureResult($operationUrl, $apiKey);
-
-    // Step 3: Build Lead Object
-    $lead = [
-        'fullName' => trim(
-            ($fields['ContactNames']['valueArray'][0]['valueObject']['FirstName']['content'] ?? '') . ' ' .
-            ($fields['ContactNames']['valueArray'][0]['valueObject']['LastName']['content'] ?? '')
-        ),
-        'email' => $fields['Emails']['valueArray'][0]['content'] ?? '',
-        'phone' => $fields['MobilePhones']['value'][0]['valuePhoneNumber']
-            ?? $fields['WorkPhones']['valueArray'][0]['valuePhoneNumber']
-            ?? '',
-        'company' => $fields['CompanyNames']['valueArray'][0]['content'] ?? '',
-        'address' => $fields['Addresses']['valueArray'][0]['content'] ?? '',
-    ];
-
-    // Debug output
-    printDebug("Parsed Lead", $lead);
-}
-?>
-
-<!-- HTML Form After PHP Parsing -->
-<h2>Upload Business Card</h2>
-<form method="post" enctype="multipart/form-data">
-    <label>Full Name:</label><br>
-    <input type="text" name="name" value="<?= isset($lead['fullName']) ? htmlspecialchars($lead['fullName']) : '' ?>" required>
-    <br><br>
-
-    <label>Select an image of the business card:</label><br><br>
-    <input type="file" name="business_card" accept="image/*" required>
-    <br><br>
-    <button type="submit" name="submit_card">Submit</button>
-</form>
-
+    fetch('../src/form_handler.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+        console.log("Azure Data:", data)
+        if (data.fullName) {
+            document.getElementById('nameField').value = data.fullName;
+        }
+        document.getElementById('statusMsg').innerText = 'Data extracted successfully!';
+    })
+    .catch(err => {
+        console.error("Fetch failed:", err);
+        document.getElementById('statusMsg').innerText = 'Failed to extract data.';
+    });
+});
+</script>

@@ -22,7 +22,7 @@ function bcol_render_upload_form() {
     include plugin_dir_path(__FILE__) . 'templates/form.php';
     return ob_get_clean();
 }
-add_shortcode('business_card_upload', 'bcol_render_upload_form');
+add_shortcode('bcol_biz_card_form', 'bcol_render_upload_form');
 
 // Enqueue CSS/JS if needed (not mandatory yet)
 function bcol_enqueue_assets() {
