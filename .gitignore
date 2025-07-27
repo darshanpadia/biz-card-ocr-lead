@@ -1,0 +1,30 @@
+# Ignore environment configuration
+.env
+
+# Ignore logs
+logs/
+*.log
+
+# Ignore dependencies
+/vendor/
+
+# Ignore system files
+.DS_Store
+Thumbs.db
+
+# Ignore IDE/editor config files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Ignore test or generated images
+*.jpg
+*.png
+
+# Ignore zip files
+*.zip
+# node_modules/
+
+# Ignore Composer lock file (optional if you're building a package)
+# composer.lock
