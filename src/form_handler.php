@@ -1,10 +1,25 @@
 <?php
 
+require_once __DIR__ . '/../vendor/autoload.php';
+
+// Load environment variables from .env file
+$dotenv = Dotenv\Dotenv::createImmutable(dirname(__DIR__));
+$dotenv->load();
+
+/**
+ * Azure Form Recognizer Configuration
+ */
+$apiKey   = $_ENV['AZURE_DI_API_KEY']     ?? '';
+$endpoint = $_ENV['AZURE_DI_ENDPOINT']    ?? '';
+$modelUrl = $_ENV['AZURE_DI_MODEL_URL']   ?? '';
+
 require_once 'azure_client.php';
-require_once 'config.php';
+require_once __DIR__ . '/config.php';
 require_once 'utils.php';
 
 header('Content-Type: application/json');
+
+error_log("FORM HANDLER API Key: $apiKey");
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['business_card'])) {
     $tmpPath = $_FILES['business_card']['tmp_name'];
@@ -16,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['business_card'])) {
     $fields = getAzureResult($operationUrl, $apiKey);
     if (empty($fields) || !is_array($fields)) {
         http_response_code(500);
-        echo json_encode(['error' => 'Azure response empty or invalid']);
+        wp_send_json_error(['message' => 'Azure response empty or invalid']);
         exit;
     }
 
@@ -34,9 +49,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['business_card'])) {
         'address' => $fields['Addresses']['valueArray'][0]['content'] ?? '',
     ];
 
-    header('Content-Type: application/json');
-    echo json_encode($lead);
+    wp_send_json($lead);
     exit;
 }
 
-echo json_encode(['error' => 'Invalid request']);
+wp_send_json_error(['message' => 'Invalid request']);
